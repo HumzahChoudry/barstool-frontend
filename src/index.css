@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.boxscore {
+  /* border: 1px solid red; */
+}
+
+.boxscore__team {
+  border: 1px solid blue;
+}
+
+.boxscore__team--header {
+  border: 1px solid yellow;
+}
