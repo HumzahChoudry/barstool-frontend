@@ -14,12 +14,43 @@ code {
 
 .boxscore {
   /* border: 1px solid red; */
+  width: 60%;
+  margin: auto;
 }
 
-.boxscore__team {
-  border: 1px solid blue;
+.game-summary {
+  width: 100%;
 }
 
-.boxscore__team--header {
-  border: 1px solid yellow;
+.table-footer {
+  /* border: 1px solid red; */
+}
+
+.footer-cell {
+  float: left;
+  width: 33%;
+}
+
+.team-footer-cell {
+  color: white;
+}
+
+.team-icon {
+  height: 20px;
+  width: auto;
+  margin-bottom: -2px;
+}
+
+.team-player-stats {
+  float: left;
+  width: 50%;
+  padding: 5px;
+  padding-top: 25px;
+  text-align: left;
+}
+.all-player-stats {
+  width: 80%;
+  margin: auto;
+}
+.stats-table {
 }
