@@ -10,7 +10,7 @@ class BoxScore extends React.Component {
           {this.props.data.home_period_scores.map((score, index) => {
             return <Table.HeaderCell>{index + 1}</Table.HeaderCell>;
           })}
-          {this.renderSportTotalHeaders()}
+          {this.props.renderFunctions.renderSportTotalHeaders()}
         </Table.Row>
       </Table.Header>
     );
@@ -26,7 +26,7 @@ class BoxScore extends React.Component {
           </>
         );
       case "NBA":
-        return <span>TOTAL</span>;
+        return <Table.HeaderCell>TOTAL</Table.HeaderCell>;
       default:
     }
   };
@@ -48,29 +48,36 @@ class BoxScore extends React.Component {
       case "MLB":
         return (
           <>
-            <Table.Cell>
+            <Table.Cell active>
               {this.props.data[`${prefix}_batter_totals`].runs}
             </Table.Cell>
-            <Table.Cell>
+            <Table.Cell active>
               {this.props.data[`${prefix}_batter_totals`].hits}
             </Table.Cell>
-            <Table.Cell>{this.props.data[`${prefix}_errors`]}</Table.Cell>
+            <Table.Cell active>
+              {this.props.data[`${prefix}_errors`]}
+            </Table.Cell>
+          </>
+        );
+      case "NBA":
+        return (
+          <>
+            <Table.Cell active>
+              {this.props.data[`${prefix}_totals`].points}
+            </Table.Cell>
           </>
         );
       default:
     }
   };
   renderTeamData = prefix => {
+    const logo = this.getTeamLogo(prefix);
     const teamAbbreviation = this.props.data[`${prefix}_team`].abbreviation;
     return (
       <>
         <Table.Cell>
           {teamAbbreviation}{" "}
-          <img
-            className="team-icon"
-            alt="team-logo"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Los_Angeles_Angels_of_Anaheim.svg/1200px-Los_Angeles_Angels_of_Anaheim.svg.png"
-          />
+          <img className="team-icon" alt="team-logo" src={logo} />
         </Table.Cell>
         {this.renderBoxscoreTeamUnits(prefix)}
         {this.renderSportResults(prefix)}
@@ -93,7 +100,7 @@ class BoxScore extends React.Component {
         <strong>{this.props.data[`${prefix}_team`].last_name}</strong>
         <br />
         <small>{this.props.data[`${prefix}_team`].abbreviation}</small>
-        <p>56 - 28</p>
+        <p>52 - 28</p>
       </div>
     );
   };
@@ -112,135 +119,217 @@ class BoxScore extends React.Component {
     }
   };
   renderPlayerStats = () => {
-    return this.renderSportStats();
-    // return (
-    //
-    //   <div className="all-player-stats">
-    //     <div className="team-player-stats">
-    //       {this.renderSportIndividualStats("away")}
-    //     </div>
-    //     <div className="team-player-stats">
-    //       {this.renderSportIndividualStats("home")}
-    //     </div>
-    //   </div>
-    // );
+    return this.props.renderFunctions.renderSportStats(this.props.data);
   };
-  renderBaseballStats = () => {
+  // renderSportStats = () => {
+  //   return
+  // switch (this.props.data.league) {
+  //   case "MLB":
+  //     return this.renderBaseballStats();
+  //   case "NBA":
+  //     return this.renderBasketballStats();
+  //   default:
+  // }
+  // };
+  renderBasketballStats = () => {
     return (
       <>
         <div className="all-player-stats">
           <div className="team-player-stats">
-            {this.renderBaseballBattingStats("away")}
+            {this.renderBasketballStarters("away", true)}
           </div>
           <div className="team-player-stats">
-            {this.renderBaseballBattingStats("home")}
+            {this.renderBasketballStarters("home", true)}
           </div>
         </div>
         <div className="all-player-stats">
           <div className="team-player-stats">
-            {this.renderBaseballPitchingStats("away")}
+            {this.renderBasketballStarters("away", false)}
           </div>
           <div className="team-player-stats">
-            {this.renderBaseballPitchingStats("home")}
+            {this.renderBasketballStarters("home", false)}
           </div>
         </div>
       </>
     );
   };
-  renderSportStats = () => {
-    switch (this.props.data.league) {
-      case "MLB":
-        return this.renderBaseballStats();
+  renderBasketballBench = () => {};
+  getTeamLogo = prefix => {
+    switch (this.props.data[`${prefix}_team`].team_id) {
+      case "los-angeles-angels":
+        return "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Los_Angeles_Angels_of_Anaheim.svg/1200px-Los_Angeles_Angels_of_Anaheim.svg.png";
+      case "oklahoma-city-thunder":
+        return "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Oklahoma_City_Thunder.svg/1200px-Oklahoma_City_Thunder.svg.png";
+      case "miami-heat":
+        return "https://images.homedepot-static.com/productImages/7f44bdc2-11e4-42e9-b206-6e6020540444/svn/red-applied-icon-wall-decals-nbop1601-64_1000.jpg";
+      case "seattle-mariners":
+        return "http://www.logospng.com/images/178/seattle-mariners-logo-png-transparent-amp-svg-vector-178132.png";
       default:
     }
   };
+  renderBasketballStarters = (prefix, isStarter) => {
+    const logo = this.getTeamLogo(prefix);
+    return (
+      <>
+        <h3>
+          {isStarter ? "Starters" : "Bench"}
+          <img className="team-icon" alt="team-logo" src={logo} />
+        </h3>
+        <Table
+          striped
+          sortable
+          textAlign="center"
+          attached="top"
+          className="stats-table"
+        >
+          <Table.HeaderCell>Starters</Table.HeaderCell>
+          <Table.HeaderCell>MIN</Table.HeaderCell>
+          <Table.HeaderCell>FG</Table.HeaderCell>
+          <Table.HeaderCell>3PT</Table.HeaderCell>
+          <Table.HeaderCell>FT</Table.HeaderCell>
 
-  renderBaseballBattingStats = prefix => {
-    return (
-      <>
-        <h3>
-          Batting Stats{" "}
-          <img
-            className="team-icon"
-            alt="team-logo"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Los_Angeles_Angels_of_Anaheim.svg/1200px-Los_Angeles_Angels_of_Anaheim.svg.png"
-          />
-        </h3>
-        <Table striped sortable singleLine className="stats-table">
-          <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>Position</Table.HeaderCell>
-          <Table.HeaderCell>AB</Table.HeaderCell>
-          <Table.HeaderCell>R</Table.HeaderCell>
-          <Table.HeaderCell>H</Table.HeaderCell>
-          <Table.HeaderCell>RBI</Table.HeaderCell>
-          <Table.HeaderCell>BB</Table.HeaderCell>
-          {this.props.data[`${prefix}_batters`].map(stats => {
-            return (
-              <Table.Row>
-                <Table.Cell>{stats.display_name}</Table.Cell>
-                <Table.Cell>{stats.position}</Table.Cell>
-                <Table.Cell>{stats.at_bats}</Table.Cell>
-                <Table.Cell>{stats.runs}</Table.Cell>
-                <Table.Cell>{stats.hits}</Table.Cell>
-                <Table.Cell>{stats.rbi}</Table.Cell>
-                <Table.Cell>{stats.walks}</Table.Cell>
-              </Table.Row>
-            );
-          })}
+          <Table.HeaderCell>REB</Table.HeaderCell>
+          <Table.HeaderCell>AST</Table.HeaderCell>
+          <Table.HeaderCell>STL</Table.HeaderCell>
+          <Table.HeaderCell>BLK</Table.HeaderCell>
+          <Table.HeaderCell>TO</Table.HeaderCell>
+          <Table.HeaderCell>PF</Table.HeaderCell>
+          <Table.HeaderCell>PTS</Table.HeaderCell>
+          {this.props.data[`${prefix}_stats`]
+            .filter(s => s.is_starter === isStarter)
+            .map(stats => {
+              return (
+                <Table.Row>
+                  <Table.Cell>{stats.display_name}</Table.Cell>
+                  <Table.Cell>{stats.minutes}</Table.Cell>
+                  <Table.Cell>
+                    {stats.field_goals_made} - {stats.field_goals_attempted}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {stats.three_point_field_goals_made} -{" "}
+                    {stats.three_point_field_goals_attempted}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {stats.free_throws_made} - {stats.free_throws_attempted}
+                  </Table.Cell>
+
+                  <Table.Cell>
+                    {stats.offensive_rebounds + stats.defensive_rebounds}
+                  </Table.Cell>
+                  <Table.Cell>{stats.assists}</Table.Cell>
+                  <Table.Cell>{stats.steals}</Table.Cell>
+                  <Table.Cell>{stats.blocks}</Table.Cell>
+                  <Table.Cell>{stats.turnovers}</Table.Cell>
+                  <Table.Cell>{stats.personal_fouls}</Table.Cell>
+                  <Table.Cell>{stats.points}</Table.Cell>
+                </Table.Row>
+              );
+            })}
         </Table>
       </>
     );
   };
-  renderBaseballPitchingStats = prefix => {
-    return (
-      <>
-        <h3>
-          Pitching Stats{" "}
-          <img
-            className="team-icon"
-            alt="team-logo"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Los_Angeles_Angels_of_Anaheim.svg/1200px-Los_Angeles_Angels_of_Anaheim.svg.png"
-          />
-        </h3>
-        <Table striped sortable className="stats-table">
-          <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>IP</Table.HeaderCell>
-          <Table.HeaderCell>H</Table.HeaderCell>
-          <Table.HeaderCell>R</Table.HeaderCell>
-          <Table.HeaderCell>ER</Table.HeaderCell>
-          <Table.HeaderCell>BB</Table.HeaderCell>
-          <Table.HeaderCell>K</Table.HeaderCell>
-          <Table.HeaderCell>HR</Table.HeaderCell>
-          <Table.HeaderCell>PC-ST</Table.HeaderCell>
-          <Table.HeaderCell>ERA</Table.HeaderCell>
-          {this.props.data[`${prefix}_pitchers`].map(stats => {
-            return (
-              <Table.Row>
-                <Table.Cell>{stats.display_name}</Table.Cell>
-                <Table.Cell>{stats.innings_pitched}</Table.Cell>
-                <Table.Cell>{stats.hits_allowed}</Table.Cell>
-                <Table.Cell>{stats.runs_allowed}</Table.Cell>
-                <Table.Cell>{stats.errors}</Table.Cell>
-                <Table.Cell>{stats.walks}</Table.Cell>
-                <Table.Cell>{stats.strike_outs}</Table.Cell>
-                <Table.Cell>{stats.home_runs_allowed}</Table.Cell>
-                <Table.Cell>
-                  {stats.pitch_count} {stats.pitches_strikes}
-                </Table.Cell>
-                <Table.Cell>{stats.era}</Table.Cell>
-              </Table.Row>
-            );
-          })}
-        </Table>
-      </>
-    );
-  };
+  // // renderBaseballStats = () => {
+  // //   return (
+  // //     <>
+  // //       <div className="all-player-stats">
+  // //         <div className="team-player-stats">
+  // //           {this.renderBaseballBattingStats("away")}
+  // //         </div>
+  // //         <div className="team-player-stats">
+  // //           {this.renderBaseballBattingStats("home")}
+  // //         </div>
+  // //       </div>
+  // //       <div className="all-player-stats">
+  // //         <div className="team-player-stats">
+  // //           {this.renderBaseballPitchingStats("away")}
+  // //         </div>
+  // //         <div className="team-player-stats">
+  // //           {this.renderBaseballPitchingStats("home")}
+  // //         </div>
+  // //       </div>
+  // //     </>
+  // //   );
+  // // };
+  // renderBaseballBattingStats = prefix => {
+  //   const logo = this.getTeamLogo(prefix);
+  //   return (
+  //     <>
+  //       <h3>
+  //         Batting Stats <img className="team-icon" alt="team-logo" src={logo} />
+  //       </h3>
+  //       <Table striped sortable className="stats-table">
+  //         <Table.HeaderCell>Name</Table.HeaderCell>
+  //         <Table.HeaderCell>Position</Table.HeaderCell>
+  //         <Table.HeaderCell>AB</Table.HeaderCell>
+  //         <Table.HeaderCell>R</Table.HeaderCell>
+  //         <Table.HeaderCell>H</Table.HeaderCell>
+  //         <Table.HeaderCell>RBI</Table.HeaderCell>
+  //         <Table.HeaderCell>BB</Table.HeaderCell>
+  //         {this.props.data[`${prefix}_batters`].map(stats => {
+  //           return (
+  //             <Table.Row>
+  //               <Table.Cell>{stats.display_name}</Table.Cell>
+  //               <Table.Cell>{stats.position}</Table.Cell>
+  //               <Table.Cell>{stats.at_bats}</Table.Cell>
+  //               <Table.Cell>{stats.runs}</Table.Cell>
+  //               <Table.Cell>{stats.hits}</Table.Cell>
+  //               <Table.Cell>{stats.rbi}</Table.Cell>
+  //               <Table.Cell>{stats.walks}</Table.Cell>
+  //             </Table.Row>
+  //           );
+  //         })}
+  //       </Table>
+  //     </>
+  //   );
+  // };
+  // renderBaseballPitchingStats = prefix => {
+  //   const logo = this.getTeamLogo(prefix);
+  //   return (
+  //     <>
+  //       <h3>
+  //         Pitching Stats{" "}
+  //         <img className="team-icon" alt="team-logo" src={logo} />
+  //       </h3>
+  //       <Table striped sortable className="stats-table">
+  //         <Table.HeaderCell>Name</Table.HeaderCell>
+  //         <Table.HeaderCell>IP</Table.HeaderCell>
+  //         <Table.HeaderCell>H</Table.HeaderCell>
+  //         <Table.HeaderCell>R</Table.HeaderCell>
+  //         <Table.HeaderCell>ER</Table.HeaderCell>
+  //         <Table.HeaderCell>BB</Table.HeaderCell>
+  //         <Table.HeaderCell>K</Table.HeaderCell>
+  //         <Table.HeaderCell>HR</Table.HeaderCell>
+  //         <Table.HeaderCell>PC-ST</Table.HeaderCell>
+  //         <Table.HeaderCell>ERA</Table.HeaderCell>
+  //         {this.props.data[`${prefix}_pitchers`].map(stats => {
+  //           return (
+  //             <Table.Row>
+  //               <Table.Cell>{stats.display_name}</Table.Cell>
+  //               <Table.Cell>{stats.innings_pitched}</Table.Cell>
+  //               <Table.Cell>{stats.hits_allowed}</Table.Cell>
+  //               <Table.Cell>{stats.runs_allowed}</Table.Cell>
+  //               <Table.Cell>{stats.errors}</Table.Cell>
+  //               <Table.Cell>{stats.walks}</Table.Cell>
+  //               <Table.Cell>{stats.strike_outs}</Table.Cell>
+  //               <Table.Cell>{stats.home_runs_allowed}</Table.Cell>
+  //               <Table.Cell>
+  //                 {stats.pitch_count} {stats.pitches_strikes}
+  //               </Table.Cell>
+  //               <Table.Cell>{stats.era}</Table.Cell>
+  //             </Table.Row>
+  //           );
+  //         })}
+  //       </Table>
+  //     </>
+  //   );
+  // };
 
   render() {
     return (
       <div>
         <div className="boxscore">
-          <Table definition className="game-summary">
+          <Table definition textAlign="center" className="game-summary">
             {this.renderHeader()}
             {this.renderGameData()}
           </Table>

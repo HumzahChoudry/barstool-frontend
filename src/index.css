@@ -12,10 +12,33 @@ code {
     monospace;
 }
 
+.nav {
+}
+
+.nav-list {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 20px;
+  padding-top: 5px;
+  height: 30px;
+  background-color: #151e23;
+  color: white;
+  text-align: left;
+  font-size: 1.5em;
+}
+.nav-list > li {
+  display: inline;
+  padding: 10px;
+}
+.nav-list > li:hover {
+  color: grey;
+}
+
 .boxscore {
   /* border: 1px solid red; */
   width: 60%;
   margin: auto;
+  padding-top: 10px;
 }
 
 .game-summary {
@@ -29,6 +52,7 @@ code {
 .footer-cell {
   float: left;
   width: 33%;
+  margin: auto;
 }
 
 .team-footer-cell {
@@ -49,7 +73,7 @@ code {
   text-align: left;
 }
 .all-player-stats {
-  width: 80%;
+  width: 90%;
   margin: auto;
 }
 .stats-table {

@@ -1,14 +1,11 @@
 import React from "react";
-import BoxScore from "./BoxScore";
+import BoxScoreContainer from "./BoxScoreContainer";
 import "./App.css";
-import MLBData from "./MLBData";
-import NBAData from "./NBAData";
 
 function App() {
-  let state = { data: MLBData };
   return (
     <div className="App">
-      <BoxScore data={state.data} />
+      <BoxScoreContainer />
     </div>
   );
 }
