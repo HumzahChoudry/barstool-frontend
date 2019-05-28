@@ -24,23 +24,23 @@ export function renderBaseballResults(prefix) {
   );
 }
 
-export function renderBaseballStats(data) {
+export function renderBaseballStats() {
   return (
     <>
       <div className="all-player-stats">
         <div className="team-player-stats">
-          {renderBaseballBattingStats(data, "away")}
+          {renderBaseballBattingStats(this.props.data, "away")}
         </div>
         <div className="team-player-stats">
-          {renderBaseballBattingStats(data, "home")}
+          {renderBaseballBattingStats(this.props.data, "home")}
         </div>
       </div>
       <div className="all-player-stats">
         <div className="team-player-stats">
-          {renderBaseballPitchingStats(data, "away")}
+          {renderBaseballPitchingStats(this.props.data, "away")}
         </div>
         <div className="team-player-stats">
-          {renderBaseballPitchingStats(data, "home")}
+          {renderBaseballPitchingStats(this.props.data, "home")}
         </div>
       </div>
     </>

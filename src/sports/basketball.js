@@ -15,45 +15,45 @@ export function renderBasketballResults(prefix) {
   );
 }
 
-export function renderBasketballStats(data) {
+export function renderBasketballStats() {
+  const homeLogo = getTeamLogo(this.props.data, "home");
+  const awayLogo = getTeamLogo(this.props.data, "away");
   return (
     <>
       <div className="all-player-stats">
         <div className="team-player-stats">
-          {renderBasketballStarters(data, "away", true)}
+          <h3>
+            {this.props.data.away_team.last_name}
+            <img className="team-icon" alt="team-logo" src={awayLogo} />
+          </h3>
+          {renderBasketballPlayerStats(this.props.data, "away", true)}
+          {renderBasketballPlayerStats(this.props.data, "away", false)}
         </div>
         <div className="team-player-stats">
-          {renderBasketballStarters(data, "home", true)}
-        </div>
-      </div>
-      <div className="all-player-stats">
-        <div className="team-player-stats">
-          {renderBasketballStarters(data, "away", false)}
-        </div>
-        <div className="team-player-stats">
-          {renderBasketballStarters(data, "home", false)}
+          <h3>
+            {this.props.data.home_team.last_name}
+            <img className="team-icon" alt="team-logo" src={homeLogo} />
+          </h3>
+          {renderBasketballPlayerStats(this.props.data, "home", true)}
+          {renderBasketballPlayerStats(this.props.data, "home", false)}
         </div>
       </div>
     </>
   );
 }
 
-export function renderBasketballStarters(data, prefix, isStarter) {
+export function renderBasketballPlayerStats(data, prefix, isStarter) {
   const logo = getTeamLogo(data, prefix);
   return (
     <>
-      <h3>
-        {isStarter ? "Starters" : "Bench"}
-        <img className="team-icon" alt="team-logo" src={logo} />
-      </h3>
       <Table
         striped
         sortable
         textAlign="center"
-        attached="top"
+        attached="bottom"
         className="stats-table"
       >
-        <Table.HeaderCell>Starters</Table.HeaderCell>
+        <Table.HeaderCell>{isStarter ? "Starters" : "Bench"}</Table.HeaderCell>
         <Table.HeaderCell>MIN</Table.HeaderCell>
         <Table.HeaderCell>FG</Table.HeaderCell>
         <Table.HeaderCell>3PT</Table.HeaderCell>

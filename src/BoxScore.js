@@ -15,21 +15,6 @@ class BoxScore extends React.Component {
       </Table.Header>
     );
   };
-  renderSportTotalHeaders = () => {
-    switch (this.props.data.league) {
-      case "MLB":
-        return (
-          <>
-            <Table.HeaderCell>R</Table.HeaderCell>
-            <Table.HeaderCell>H</Table.HeaderCell>
-            <Table.HeaderCell>E</Table.HeaderCell>
-          </>
-        );
-      case "NBA":
-        return <Table.HeaderCell>TOTAL</Table.HeaderCell>;
-      default:
-    }
-  };
   renderGameData = () => {
     return (
       <Table.Body>
@@ -43,33 +28,6 @@ class BoxScore extends React.Component {
       <Table.Cell>{score}</Table.Cell>
     ));
   };
-  renderSportResults = prefix => {
-    switch (this.props.data.league) {
-      case "MLB":
-        return (
-          <>
-            <Table.Cell active>
-              {this.props.data[`${prefix}_batter_totals`].runs}
-            </Table.Cell>
-            <Table.Cell active>
-              {this.props.data[`${prefix}_batter_totals`].hits}
-            </Table.Cell>
-            <Table.Cell active>
-              {this.props.data[`${prefix}_errors`]}
-            </Table.Cell>
-          </>
-        );
-      case "NBA":
-        return (
-          <>
-            <Table.Cell active>
-              {this.props.data[`${prefix}_totals`].points}
-            </Table.Cell>
-          </>
-        );
-      default:
-    }
-  };
   renderTeamData = prefix => {
     const logo = this.getTeamLogo(prefix);
     const teamAbbreviation = this.props.data[`${prefix}_team`].abbreviation;
@@ -80,7 +38,7 @@ class BoxScore extends React.Component {
           <img className="team-icon" alt="team-logo" src={logo} />
         </Table.Cell>
         {this.renderBoxscoreTeamUnits(prefix)}
-        {this.renderSportResults(prefix)}
+        {this.props.renderFunctions.renderSportResults.call(this, prefix)}
       </>
     );
   };
@@ -109,7 +67,7 @@ class BoxScore extends React.Component {
     switch (info.status) {
       case "completed":
         return <strong className="footer-cell">Final</strong>;
-      case "scheduled":
+      case "scheduled": //this is me assuming scheduled would be a status
         return (
           <strong className="footer-cell">
             Scheduled: \n${info.start_date_time}
@@ -119,41 +77,8 @@ class BoxScore extends React.Component {
     }
   };
   renderPlayerStats = () => {
-    return this.props.renderFunctions.renderSportStats(this.props.data);
+    return this.props.renderFunctions.renderSportStats.call(this);
   };
-  // renderSportStats = () => {
-  //   return
-  // switch (this.props.data.league) {
-  //   case "MLB":
-  //     return this.renderBaseballStats();
-  //   case "NBA":
-  //     return this.renderBasketballStats();
-  //   default:
-  // }
-  // };
-  renderBasketballStats = () => {
-    return (
-      <>
-        <div className="all-player-stats">
-          <div className="team-player-stats">
-            {this.renderBasketballStarters("away", true)}
-          </div>
-          <div className="team-player-stats">
-            {this.renderBasketballStarters("home", true)}
-          </div>
-        </div>
-        <div className="all-player-stats">
-          <div className="team-player-stats">
-            {this.renderBasketballStarters("away", false)}
-          </div>
-          <div className="team-player-stats">
-            {this.renderBasketballStarters("home", false)}
-          </div>
-        </div>
-      </>
-    );
-  };
-  renderBasketballBench = () => {};
   getTeamLogo = prefix => {
     switch (this.props.data[`${prefix}_team`].team_id) {
       case "los-angeles-angels":
@@ -167,163 +92,6 @@ class BoxScore extends React.Component {
       default:
     }
   };
-  renderBasketballStarters = (prefix, isStarter) => {
-    const logo = this.getTeamLogo(prefix);
-    return (
-      <>
-        <h3>
-          {isStarter ? "Starters" : "Bench"}
-          <img className="team-icon" alt="team-logo" src={logo} />
-        </h3>
-        <Table
-          striped
-          sortable
-          textAlign="center"
-          attached="top"
-          className="stats-table"
-        >
-          <Table.HeaderCell>Starters</Table.HeaderCell>
-          <Table.HeaderCell>MIN</Table.HeaderCell>
-          <Table.HeaderCell>FG</Table.HeaderCell>
-          <Table.HeaderCell>3PT</Table.HeaderCell>
-          <Table.HeaderCell>FT</Table.HeaderCell>
-
-          <Table.HeaderCell>REB</Table.HeaderCell>
-          <Table.HeaderCell>AST</Table.HeaderCell>
-          <Table.HeaderCell>STL</Table.HeaderCell>
-          <Table.HeaderCell>BLK</Table.HeaderCell>
-          <Table.HeaderCell>TO</Table.HeaderCell>
-          <Table.HeaderCell>PF</Table.HeaderCell>
-          <Table.HeaderCell>PTS</Table.HeaderCell>
-          {this.props.data[`${prefix}_stats`]
-            .filter(s => s.is_starter === isStarter)
-            .map(stats => {
-              return (
-                <Table.Row>
-                  <Table.Cell>{stats.display_name}</Table.Cell>
-                  <Table.Cell>{stats.minutes}</Table.Cell>
-                  <Table.Cell>
-                    {stats.field_goals_made} - {stats.field_goals_attempted}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {stats.three_point_field_goals_made} -{" "}
-                    {stats.three_point_field_goals_attempted}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {stats.free_throws_made} - {stats.free_throws_attempted}
-                  </Table.Cell>
-
-                  <Table.Cell>
-                    {stats.offensive_rebounds + stats.defensive_rebounds}
-                  </Table.Cell>
-                  <Table.Cell>{stats.assists}</Table.Cell>
-                  <Table.Cell>{stats.steals}</Table.Cell>
-                  <Table.Cell>{stats.blocks}</Table.Cell>
-                  <Table.Cell>{stats.turnovers}</Table.Cell>
-                  <Table.Cell>{stats.personal_fouls}</Table.Cell>
-                  <Table.Cell>{stats.points}</Table.Cell>
-                </Table.Row>
-              );
-            })}
-        </Table>
-      </>
-    );
-  };
-  // // renderBaseballStats = () => {
-  // //   return (
-  // //     <>
-  // //       <div className="all-player-stats">
-  // //         <div className="team-player-stats">
-  // //           {this.renderBaseballBattingStats("away")}
-  // //         </div>
-  // //         <div className="team-player-stats">
-  // //           {this.renderBaseballBattingStats("home")}
-  // //         </div>
-  // //       </div>
-  // //       <div className="all-player-stats">
-  // //         <div className="team-player-stats">
-  // //           {this.renderBaseballPitchingStats("away")}
-  // //         </div>
-  // //         <div className="team-player-stats">
-  // //           {this.renderBaseballPitchingStats("home")}
-  // //         </div>
-  // //       </div>
-  // //     </>
-  // //   );
-  // // };
-  // renderBaseballBattingStats = prefix => {
-  //   const logo = this.getTeamLogo(prefix);
-  //   return (
-  //     <>
-  //       <h3>
-  //         Batting Stats <img className="team-icon" alt="team-logo" src={logo} />
-  //       </h3>
-  //       <Table striped sortable className="stats-table">
-  //         <Table.HeaderCell>Name</Table.HeaderCell>
-  //         <Table.HeaderCell>Position</Table.HeaderCell>
-  //         <Table.HeaderCell>AB</Table.HeaderCell>
-  //         <Table.HeaderCell>R</Table.HeaderCell>
-  //         <Table.HeaderCell>H</Table.HeaderCell>
-  //         <Table.HeaderCell>RBI</Table.HeaderCell>
-  //         <Table.HeaderCell>BB</Table.HeaderCell>
-  //         {this.props.data[`${prefix}_batters`].map(stats => {
-  //           return (
-  //             <Table.Row>
-  //               <Table.Cell>{stats.display_name}</Table.Cell>
-  //               <Table.Cell>{stats.position}</Table.Cell>
-  //               <Table.Cell>{stats.at_bats}</Table.Cell>
-  //               <Table.Cell>{stats.runs}</Table.Cell>
-  //               <Table.Cell>{stats.hits}</Table.Cell>
-  //               <Table.Cell>{stats.rbi}</Table.Cell>
-  //               <Table.Cell>{stats.walks}</Table.Cell>
-  //             </Table.Row>
-  //           );
-  //         })}
-  //       </Table>
-  //     </>
-  //   );
-  // };
-  // renderBaseballPitchingStats = prefix => {
-  //   const logo = this.getTeamLogo(prefix);
-  //   return (
-  //     <>
-  //       <h3>
-  //         Pitching Stats{" "}
-  //         <img className="team-icon" alt="team-logo" src={logo} />
-  //       </h3>
-  //       <Table striped sortable className="stats-table">
-  //         <Table.HeaderCell>Name</Table.HeaderCell>
-  //         <Table.HeaderCell>IP</Table.HeaderCell>
-  //         <Table.HeaderCell>H</Table.HeaderCell>
-  //         <Table.HeaderCell>R</Table.HeaderCell>
-  //         <Table.HeaderCell>ER</Table.HeaderCell>
-  //         <Table.HeaderCell>BB</Table.HeaderCell>
-  //         <Table.HeaderCell>K</Table.HeaderCell>
-  //         <Table.HeaderCell>HR</Table.HeaderCell>
-  //         <Table.HeaderCell>PC-ST</Table.HeaderCell>
-  //         <Table.HeaderCell>ERA</Table.HeaderCell>
-  //         {this.props.data[`${prefix}_pitchers`].map(stats => {
-  //           return (
-  //             <Table.Row>
-  //               <Table.Cell>{stats.display_name}</Table.Cell>
-  //               <Table.Cell>{stats.innings_pitched}</Table.Cell>
-  //               <Table.Cell>{stats.hits_allowed}</Table.Cell>
-  //               <Table.Cell>{stats.runs_allowed}</Table.Cell>
-  //               <Table.Cell>{stats.errors}</Table.Cell>
-  //               <Table.Cell>{stats.walks}</Table.Cell>
-  //               <Table.Cell>{stats.strike_outs}</Table.Cell>
-  //               <Table.Cell>{stats.home_runs_allowed}</Table.Cell>
-  //               <Table.Cell>
-  //                 {stats.pitch_count} {stats.pitches_strikes}
-  //               </Table.Cell>
-  //               <Table.Cell>{stats.era}</Table.Cell>
-  //             </Table.Row>
-  //           );
-  //         })}
-  //       </Table>
-  //     </>
-  //   );
-  // };
 
   render() {
     return (
@@ -336,70 +104,6 @@ class BoxScore extends React.Component {
           {this.renderBoxscoreDetails()}
         </div>
         {this.renderPlayerStats()}
-
-        {/*<div className="boxscore">
-          <div className="boxscore__team boxscore__team--header">
-            <label />
-            <div className="boxscore__team__units">
-              <span>1</span>
-              <span>2</span>
-              <span>3</span>
-              <span>4</span>
-            </div>
-            <div className="boxscore__team__results">
-              <span>TOTAL</span>
-            </div>
-          </div>
-          <div className="boxscore__team boxscore__team--away">
-            <label>NYJ</label>
-            <div className="boxscore__team__units">
-              <span>0</span>
-              <span>3</span>
-              <span>0</span>
-              <span>7</span>
-            </div>
-            <div className="boxscore__team__results">
-              <span>10</span>
-            </div>
-          </div>
-          <div className="boxscore__team boxscore__team--home">
-            <label>NE</label>
-            <div className="boxscore__team__units">
-              <span>14</span>
-              <span>3</span>
-              <span>7</span>
-              <span>10</span>
-            </div>
-            <div className="boxscore__team__results">
-              <span>33</span>
-            </div>
-          </div>
-          <div className="boxscore__details">
-            <div
-              className="boxscore__details__team boxscore__details__team--away"
-              style={style1}
-            >
-              <p>
-                <strong>JETS</strong>
-                <small>NYJ</small>
-              </p>
-              <span>56-38</span>
-            </div>
-            <div className="boxscore__details__info">
-              <strong>Final</strong>
-            </div>
-            <div
-              className="boxscore__details__team boxscore__details__team--home"
-              style={style2}
-            >
-              <p>
-                <strong>PATRIOTS</strong>
-                <small>NE</small>
-              </p>
-              <span>56-38</span>
-            </div>
-          </div>
-        </div>*/}
       </div>
     );
   }

@@ -17,11 +17,10 @@ class BoxScoreContainer extends React.Component {
     data: null
   };
   componentDidMount() {
-    console.log("%c hi", "color: blue");
+    //just a default game to display
     fetch("http://localhost:3001/games/eed38457-db28-4658-ae4f-4d4d38e9e212")
       .then(res => res.json())
       .then(data => {
-        console.log("%c data", "color: blue", data);
         this.setState({ data });
       });
   }
@@ -29,12 +28,11 @@ class BoxScoreContainer extends React.Component {
     fetch(`http://localhost:3001/games/${e.target.dataset.id}`)
       .then(res => res.json())
       .then(data => {
-        console.log("%c data", "color: blue", data);
         this.setState({ data });
       });
   };
   convertLeagueToSport = league => {
-    //this method will make more sense when we have multiple leagues that will render the same datasets, ex: NCAAF/NFL or all the soccer leagues
+    //this method will make more sense when we have multiple leagues that will render the same info, ex: NCAAF/NFL or all the soccer leagues
     switch (league) {
       case "MLB":
         return "baseball";
