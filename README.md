@@ -6,8 +6,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### A few notes 
 
-* project is only made to work in full screen for a laptop/computer, haven't added code for different screen sizes
-
 * need to account for overtime, right now it would show up as 5 in NBA but would be fine for baseball, we could extract out the logic that renders each quarter, inning etc for each sport. 
 
 * No team records available so I just hardcoded one in.
